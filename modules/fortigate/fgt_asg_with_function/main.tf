@@ -85,10 +85,6 @@ resource "google_compute_region_instance_template" "main" {
   }
 }
 
-resource "google_compute_target_pool" "target_pool" {
-  name = "${local.prefix}target-pool"
-}
-
 resource "google_compute_instance_group_manager" "manager" {
   name               = "${local.prefix}instance-group"
   base_instance_name = "${local.prefix}group"
@@ -96,7 +92,6 @@ resource "google_compute_instance_group_manager" "manager" {
     instance_template = google_compute_region_instance_template.main.self_link
   }
   zone         = var.zone
-  target_pools = [google_compute_target_pool.target_pool.id]
 }
 
 resource "google_compute_autoscaler" "autoscaler" {
