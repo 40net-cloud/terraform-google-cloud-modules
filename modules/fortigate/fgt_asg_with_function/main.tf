@@ -1,5 +1,5 @@
 locals {
-  prefix              = "${var.prefix}-"
+  prefix              = var.prefix == "" ? "" : "${var.prefix}-"
   fgt_password        = var.fgt_password == "" ? random_password.fgt_password[0].result : var.fgt_password
   autoscale_psksecret = var.cloud_function.autoscale_psksecret == "" ? random_password.autoscale_psksecret[0].result : var.cloud_function.autoscale_psksecret
 }
