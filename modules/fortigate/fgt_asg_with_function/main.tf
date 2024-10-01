@@ -90,6 +90,16 @@ resource "google_compute_region_instance_template" "main" {
   }
 }
 
+resource "google_compute_region_health_check" "mig" {
+  name               = "${local.prefix}hc-mig"
+  region             = var.region
+  timeout_sec        = 5
+  check_interval_sec = 20
+  tcp_health_check {
+    port = 8008
+  }
+}
+
 resource "google_compute_instance_group_manager" "manager" {
   name               = "${local.prefix}instance-group"
   base_instance_name = "${local.prefix}group"
@@ -97,6 +107,11 @@ resource "google_compute_instance_group_manager" "manager" {
     instance_template = google_compute_region_instance_template.main.self_link
   }
   zone         = var.zone
+
+  auto_healing_policies {
+    health_check = google_compute_region_health_check.mig.id
+    initial_delay_sec = 360
+  }
 }
 
 resource "google_compute_autoscaler" "autoscaler" {
