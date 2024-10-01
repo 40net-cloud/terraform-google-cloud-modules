@@ -19,6 +19,11 @@ resource "random_password" "autoscale_psksecret" {
 data "google_compute_default_service_account" "default" {
 }
 
+resource "google_project_service" "eventarc" {
+  service = "eventarc.googleapis.com"
+  disable_on_destroy = false
+}
+
 data "google_compute_image" "fgt_image" {
   project = "fortigcp-project-001"
   family  = var.image_type
