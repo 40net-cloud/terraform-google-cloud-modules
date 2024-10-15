@@ -9,7 +9,7 @@ resource "google_logging_project_sink" "topic" {
     resource.type="gce_instance" AND
     logName="projects/${var.project}/logs/cloudaudit.googleapis.com%2Factivity" AND
     (protoPayload.methodName:"compute.instances.insert" OR protoPayload.methodName:"compute.instances.delete") AND
-    protoPayload.resourceName:"/zones/${var.zone}/instances/${var.prefix}" AND
+    protoPayload.resourceName=~"/zones/${var.region}-./instances/${var.prefix}" AND
     operation.last=true
   EOT
   unique_writer_identity = true # Use a unique writer

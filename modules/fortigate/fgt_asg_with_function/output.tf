@@ -1,5 +1,5 @@
 output "instance_group_id" {
-  value       = google_compute_instance_group_manager.manager.instance_group
+  value       = google_compute_region_instance_group_manager.manager.instance_group
   description = "The full URL of the instance group created by this module."
 }
 

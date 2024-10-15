@@ -18,9 +18,10 @@ variable "region" {
   description = "Region to deploy VM."
 }
 
-variable "zone" {
-  type        = string
-  description = "Zone to deploy VM."
+variable "zones" {
+  type        = list(string)
+  description = "Preferred zones to deploy VM."
+  default     = []
 }
 
 # FGT vars
