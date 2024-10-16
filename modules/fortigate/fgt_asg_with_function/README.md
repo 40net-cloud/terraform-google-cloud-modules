@@ -1,6 +1,18 @@
 ## Requirements
 
-No requirements.
+Google APIs enabled:
+- eventarc.googleapis.com
+- firestore.googleapis.com
+- storage.googleapis.com
+- compute.googleapis.com
+- secretmanager.googleapis.com
+- pubsub.googleapis.com
+- vpcaccess.googleapis.com
+- cloudbuild.googleapis.com
+- run.googleapis.com
+- logging.googleapis.com
+
+Firestore *(default)* database must be created in Native mode before using this module.
 
 ## Providers
 
@@ -58,7 +70,7 @@ No modules.
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix of all objects in this module | `string` | n/a | yes |
 | <a name="input_project"></a> [project](#input\_project) | Your GCP project name. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Region to deploy VM. | `string` | n/a | yes |
-| <a name="input_zone"></a> [zone](#input\_zone) | Zone to deploy VM. | `string` | n/a | yes |
+| <a name="input_zone"></a> [zones](#input\_zone) | (optional) Zones to deploy VM. | `list(string)` | `[]` | yes |
 
 ## Outputs
 
