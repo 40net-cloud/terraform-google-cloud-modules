@@ -1,5 +1,5 @@
 locals {
-  prefix              = "${var.prefix}-"
+  prefix              = var.prefix == "" ? "" : "${var.prefix}-"
   fgt_password        = var.fgt_password == "" ? random_password.fgt_password[0].result : var.fgt_password
   autoscale_psksecret = var.cloud_function.autoscale_psksecret == "" ? random_password.autoscale_psksecret[0].result : var.cloud_function.autoscale_psksecret
 }
@@ -85,19 +85,36 @@ resource "google_compute_region_instance_template" "main" {
   }
 }
 
-resource "google_compute_instance_group_manager" "manager" {
-  name               = "${local.prefix}instance-group"
-  base_instance_name = "${local.prefix}group"
+resource "google_compute_region_health_check" "mig" {
+  name                = "${local.prefix}hc-mig"
+  region              = var.region
+  timeout_sec         = 2
+  check_interval_sec  = 30
+  unhealthy_threshold = 10
+  http_health_check {
+    # TODO: parametrize probe port in both bootstrap config and here
+    port = 8008
+  }
+}
+
+resource "google_compute_region_instance_group_manager" "manager" {
+  name                      = "${local.prefix}instance-group"
+  base_instance_name        = "${local.prefix}group"
+  region                    = var.region
+  distribution_policy_zones = length(var.zones) > 0 ? var.zones : null
   version {
     instance_template = google_compute_region_instance_template.main.self_link
   }
-  zone         = var.zone
+  auto_healing_policies {
+    health_check      = google_compute_region_health_check.mig.id
+    initial_delay_sec = 180
+  }
 }
 
-resource "google_compute_autoscaler" "autoscaler" {
+resource "google_compute_region_autoscaler" "autoscaler" {
   name   = "${local.prefix}autoscaler"
-  zone   = var.zone
-  target = google_compute_instance_group_manager.manager.id
+  region = var.region
+  target = google_compute_region_instance_group_manager.manager.id
 
   autoscaling_policy {
     max_replicas    = var.autoscaler.max_instances
