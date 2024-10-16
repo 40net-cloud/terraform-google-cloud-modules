@@ -8,7 +8,7 @@ resource "google_logging_project_sink" "topic" {
   filter                 = <<-EOT
     resource.type="gce_instance" AND
     logName="projects/${var.project}/logs/cloudaudit.googleapis.com%2Factivity" AND
-    (protoPayload.methodName:"compute.instances.insert" OR protoPayload.methodName:"compute.instances.delete") AND
+    (protoPayload.methodName:"compute.instances.insert" OR protoPayload.methodName:"compute.instances.delete" OR protoPayload.methodName:"compute.instances.update") AND
     protoPayload.resourceName=~"/zones/${var.region}-./instances/${var.prefix}" AND
     operation.last=true
   EOT

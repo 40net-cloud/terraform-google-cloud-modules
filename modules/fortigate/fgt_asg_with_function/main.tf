@@ -85,6 +85,18 @@ resource "google_compute_region_instance_template" "main" {
   }
 }
 
+resource "google_compute_region_health_check" "mig" {
+  name                = "${local.prefix}hc-mig"
+  region              = var.region
+  timeout_sec         = 2
+  check_interval_sec  = 30
+  unhealthy_threshold = 10
+  http_health_check {
+    # TODO: parametrize probe port in both bootstrap config and here
+    port = 8008
+  }
+}
+
 resource "google_compute_region_instance_group_manager" "manager" {
   name                      = "${local.prefix}instance-group"
   base_instance_name        = "${local.prefix}group"
@@ -92,6 +104,10 @@ resource "google_compute_region_instance_group_manager" "manager" {
   distribution_policy_zones = length(var.zones) > 0 ? var.zones : null
   version {
     instance_template = google_compute_region_instance_template.main.self_link
+  }
+  auto_healing_policies {
+    health_check      = google_compute_region_health_check.mig.id
+    initial_delay_sec = 180
   }
 }
 
